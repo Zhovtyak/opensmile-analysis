@@ -1,5 +1,4 @@
 import SMILEapi
-import csv
 import pandas as pd
 import os
 import numpy as np
@@ -7,14 +6,6 @@ import tensorflow as tf
 from const import RESULTS_ROOT_PATH, CONF
 
 openSmile = SMILEapi.OpenSMILE()
-
-
-def getLastRowData(file):
-    with open(file, "r") as f:
-        reader = csv.reader(f)
-        for row in reader:
-            last_row = row
-    return last_row
 
 
 def convert_to_float(element):
@@ -94,16 +85,26 @@ def cnn_prediction(df):
 
 
 def main():
-    # audiofiles_root_path = "dataset/train/"
-    audiofiles_root_path = "opensmile/example-audio/"
+    audiofiles_root_path = "test/"
+    # audiofiles_root_path = "opensmile/example-audio/"
 
     files_to_analize = get_wav_files(audiofiles_root_path)
     opensmile_analysis(files_to_analize, CONF, audiofiles_root_path,
                        RESULTS_ROOT_PATH)
     df = (forming_dataframe(files_to_analize, RESULTS_ROOT_PATH))
     df.to_csv('output.csv', index=False)
-    cnn_prediction(df)
+    df = cnn_prediction(df)
+    print(df[['name', 'class']])
+    return len(df)
 
+import time
 
 if __name__ == '__main__':
-    main()
+    start_time = time.time()
+    vsego = 0
+    for i in range(100):
+        vsego += main()
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f'Обработано {vsego} аудиофайлов')
+    print(f"Скорость обработки: {elapsed_time} секунд")

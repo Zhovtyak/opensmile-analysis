@@ -4,3 +4,4 @@ tensorflow
 pandas
 matplotlib
 tkinter
+pyaudio
